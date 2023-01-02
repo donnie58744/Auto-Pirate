@@ -34,7 +34,7 @@ class FtpUploadTracker:
     
     def handle(self, block):
         main.plexRequestSendTimer+=1
-        self.sizeWritten += 1024
+        self.sizeWritten += main.ftpBlockSize
         percentComplete = round((self.sizeWritten / self.totalSize) *100)
         
         if (self.lastShownPercent != percentComplete):
@@ -54,7 +54,7 @@ class FtpUploadTracker:
                 else:
                     main.updateSeasonInfo(mediaId=self.mediaId, seasonNum=self.seasonNum, data=100)
             else:
-                if (main.plexRequestSendTimer >= 90640):
+                if (main.plexRequestSendTimer >= 3000):
                     if (self.mediaType == 'Movies'):
                         main.changePlexRequestStatus('https://www.quackyos.com/QuackyForum/scripts/changeDownloadProgress.php', self.mediaId, percentComplete)
                     else:
@@ -135,6 +135,7 @@ class CheckShowDB():
                 
 
 class main():
+    torrentDriveLetter='F:'
     plexTimer = 0
     plexTimeout = 15
     downloadedMedia = []
@@ -147,6 +148,7 @@ class main():
     stalledTimeout = 120
     plexRequestSendTimer = 0
     daysToAdd=5
+    ftpBlockSize=102400
 
     FTPip = ""
     FTPusername = ""
@@ -287,7 +289,7 @@ class main():
                             print('Server Location: ' + f'/PLEX/{mediaType}/{mediaName}/{torrentSeason}/{folderPath}/')
                             ftp.cwd(f'/PLEX/{mediaType}/{mediaName}/{torrentSeason}/{folderPath}/')
                             try:
-                                ftp.storbinary('STOR %s' % searchFile, fh, 1024, uploadTracker.handle)
+                                ftp.storbinary('STOR %s' % searchFile, fh, main.ftpBlockSize, uploadTracker.handle)
                             except Exception as e:
                                 if ('[WinError 10053]' in str(e) or '[WinError 10054]' in str(e)):
                                     raise e
@@ -300,7 +302,7 @@ class main():
                             fh.close()
                     else:
                         print('SKIPPED: ' + filename)
-                elif os.path.isdir(fileLocation + r'\{}'.format(searchFile)):
+                elif (os.path.isdir(fileLocation + r'\{}'.format(searchFile)) and searchFile.lower() != 'subs'):
                     try:
                         print('Server Location: ' + f'/PLEX/{mediaType}/{mediaName}/{torrentSeason}/{folderPath}/{searchFile}/')
                         if (folderPath):
@@ -311,12 +313,11 @@ class main():
                         main.uploadMedia(ftp, fileLocation + r'\{}'.format(searchFile), mediaName, torrentSeason, mediaId, status, True, f'{folderPath}/{searchFile}')
                         os.chdir(fileLocation)
                     except Exception as e:
-                        print(f'268: {e}')
-                        sleep(5)
-                        # Relogin to prevent reading timed out object
-                        ftp = ftplib.FTP(main.FTPip, timeout=20)
-                        ftp.login(main.FTPusername, main.FTPPassword)
-                        pass
+                        print(f'{e}')
+                        raise e
+
+            # Delete Request
+            main.deleteAndNotifyPlexRequest(mediaId=mediaId, season=torrentSeason)
         except Exception as e:
             if ('[WinError 10053]' in str(e) or '[WinError 10054]' in str(e)):
                 raise e
@@ -417,7 +418,7 @@ class main():
                 pass
 
             if (request == 'add'):
-                qbt_client.torrents_add(urls=url,save_path=f"F:/upload/{mediaType}/", rename=f"{mediaName}*{seasons}*{mediaId}*{mediaType}")
+                qbt_client.torrents_add(urls=url,save_path=f"{main.torrentDriveLetter}/upload/{mediaType}/", rename=f"{mediaName}*{seasons}*{mediaId}*{mediaType}")
                 if (seasons == '[]'): seasons = ''
                 if (mediaName+seasons+mediaId not in main.downloadedMedia):
                     main.changePlexRequestStatus('https://www.quackyos.com/QuackyForum/scripts/changeStatus.php', mediaId, 'Downloading ' + seasons)
@@ -496,14 +497,14 @@ class main():
                                 ftp.login(main.FTPusername, main.FTPPassword)
                                 main.uploadMedia(ftp, torrent.content_path, torrentName, torrentSeason, torrentId, 'Uploading')
                             ftp.close()
-                            main.deleteAndNotifyPlexRequest(mediaId=torrentId, season=torrentSeason)
-                            main.changePlexRequestStatus('https://www.quackyos.com/QuackyForum/scripts/changeStatus.php', torrentId, 'Downloading')
                         except:
-                            print("ERROR: Upload Failed " + torrentName)
+                            print(f"ERROR: Upload Failed {torrentName} {torrentSeason}")
+                            print(dir_path+'/FailedUploads.txt')
+                            f = open(dir_path+'/FailedUploads.txt', 'a')
+                            f.write('\n'+str(torrentData))
                             main.changePlexRequestStatus('https://www.quackyos.com/QuackyForum/scripts/changeStatus.php', torrentId, 'Upload Failed!')
                         
-
-                        # Torrent Finished Uploading, Delete Request and what not
+                        # Torrent Finished Uploading
                         main.torrentClientOpen = False
                         CheckShowDB.failed = []
                         main.uploading = False

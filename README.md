@@ -1,5 +1,8 @@
 ## For Windows Only
 
+### Code Setup
+> Go into main.py and change `torrentDriveLetter` varible and FTP login info `FTPip`,  `FTPusername`, and `FTPPassword`. Also use login creditienals for Quacky Os and fill it in for `quackyosUsername`, `quackyosPassword`.
+
 ### Downloads:
 
 > Download [qBittorent](https://www.qbittorrent.org/download.php)
