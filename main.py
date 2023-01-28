@@ -155,6 +155,8 @@ class main():
     FTPPassword = ""
     quackyosUsername = ""
     quackyosPassword = ""
+    windscribePath = r"C:\Program Files\Windscribe"
+    qbittorrentExe = r"C:\Program Files (x86)\qBittorrent\qbittorrent.exe"
 
     def createMagnetURL(torrentList, torrentURL):
         for i in torrentList:
@@ -396,10 +398,10 @@ class main():
             if request == 'open':
                 if (main.torrentClientOpen == False):
                     print('Opening Torrent Client...')
-                    subprocess.Popen(["C:\Program Files\qBittorrent\qbittorrent.exe"])
+                    subprocess.Popen([main.qbittorrentExe])
                     main.torrentClientOpen = True
                 else:
-                    print('Torrent Client Already Opended')
+                    print('Torrent Client Already Open')
             # instantiate a Client using the appropriate WebUI configuration
             qbt_client = qbittorrentapi.Client(
                 host='localhost',
@@ -418,7 +420,7 @@ class main():
                 pass
 
             if (request == 'add'):
-                qbt_client.torrents_add(urls=url,save_path=f"{main.torrentDriveLetter}/upload/{mediaType}/", rename=f"{mediaName}*{seasons}*{mediaId}*{mediaType}")
+                qbt_client.torrents_add(urls=url, save_path=f"{main.torrentDriveLetter}/upload/{mediaType}/", rename=f"{mediaName}*{seasons}*{mediaId}*{mediaType}", use_download_path=False)
                 if (seasons == '[]'): seasons = ''
                 if (mediaName+seasons+mediaId not in main.downloadedMedia):
                     main.changePlexRequestStatus('https://www.quackyos.com/QuackyForum/scripts/changeStatus.php', mediaId, 'Downloading ' + seasons)
@@ -496,12 +498,13 @@ class main():
                                 print('Logging In...')
                                 ftp.login(main.FTPusername, main.FTPPassword)
                                 main.uploadMedia(ftp, torrent.content_path, torrentName, torrentSeason, torrentId, 'Uploading')
-                            ftp.close()
-                        except:
+                                ftp.close()
+                        except Exception as e:
                             print(f"ERROR: Upload Failed {torrentName} {torrentSeason}")
+                            print(e)
                             print(dir_path+'/FailedUploads.txt')
                             f = open(dir_path+'/FailedUploads.txt', 'a')
-                            f.write('\n'+str(torrentData))
+                            f.write('\n'+str(torrentData)+':'+str(e))
                             main.changePlexRequestStatus('https://www.quackyos.com/QuackyForum/scripts/changeStatus.php', torrentId, 'Upload Failed!')
                         
                         # Torrent Finished Uploading
@@ -590,7 +593,7 @@ class main():
             return output
 
     def windscribe(arguments):
-        subprocess.check_call([r"C:\Program Files (x86)\Windscribe\windscribe-cli.exe"] + arguments)
+        subprocess.check_call([main.windscribePath+r"\windscribe-cli.exe"] + arguments)
     
     def checkVPN(uploading):
         try:
