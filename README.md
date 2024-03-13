@@ -24,9 +24,9 @@
 
 > Tools -> Options -> Downloads
 
-- Turn Off `Display torrent content and some options`
+- Turn On `Display torrent content and some options`
 
-- Under Saving Managment set `Default Torrent Managment Mode` to `Automatic`
+- Under Saving Managment set `Default Torrent Managment Mode` to `Manual`
 
 - Change the `Default Save Path` to whatever you would like
 
