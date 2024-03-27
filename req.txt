@@ -1,1 +1,2 @@
 qbittorrent-api
+feedparser
