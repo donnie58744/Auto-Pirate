@@ -1,7 +1,7 @@
 # For Windows Only
 
 ## Settings
-- To change any settings open `UserData.json`
+- To change any settings open `UserData.json` **For file paths use `/` not `\`**
 
 ## Downloads:
 
