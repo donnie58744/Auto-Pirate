@@ -1,7 +1,9 @@
 # For Windows Only
 
 ## Settings
-- To change any settings open `UserData.json` **For file paths use `/` not `\`**
+- To change any settings open `UserData.json`
+  - **For file paths use `/` not `\`**
+  - **Jackett IP must include port as well ex. 127.0.0.1:9117**
 
 ## Downloads:
 
@@ -28,3 +30,7 @@
 - Set Port to `8080`
 
 - Enable `Bypass authentication for clients on localhost`
+
+## Change Jackett Settings
+
+- Add `YTS` and `TheRarBg` as indexers
