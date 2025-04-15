@@ -16,12 +16,12 @@ class PlexRequest:
         try:
             if (self.plexTimer >= self.plexTimeout or self.plexTimer == 0):
                 headers = {
-                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36',
+                    'Content-Type': 'application/json',
                 }
-                r = requests.post('https://www.quackyos.com/QuackyForum/scripts/getPlexRequestsAuto.php', headers=headers, timeout=10)
+                r = requests.get('https://www.quackyos.com/QuackyForum/scripts/getPlexRequestsAuto.php', headers=headers, timeout=10)
                 jsonResponse = r.json()
                 self.plexTimer = 0
-
                 return jsonResponse
             self.plexTimer+=1
                 
