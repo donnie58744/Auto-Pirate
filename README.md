@@ -60,7 +60,7 @@
 - #### Configure Jackett Settings
 
   - Click the **Green Plus** around the **Top Right** area
-    - Add **YTS** and **TheRarBg** as indexers
+    - Add indexers
 
 
 ### Run
