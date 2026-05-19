@@ -2,6 +2,8 @@
 
 *Grabs the list of Movie and Show PLEX Requests from the [Quacky Forums](https://quackyos.com?openWindow=QuackyForum) at [QuackyOS](https://quackyos.com). Auto Pirate uses [Jackett](https://github.com/Jackett/Jackett) to find the torrents which are then sent to [qBittorrent](https://www.qbittorrent.org/) and downloaded while using [Windscribe VPN](https://windscribe.com/); it then uploads the files to a specific location to a FTP server with no VPN.*
 
+**I AM NOT RESPONSIBLE FOR ANY ILLEGAL ACTIVITY THAT TAKES PLACE. THIS SOFTWARE IS FOR INDEXING REASONS ONLY; WHAT YOU DO WITH IT IS ON YOU.**
+
 -----
 
 ## Table of Contents
